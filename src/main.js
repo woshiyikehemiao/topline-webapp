@@ -12,7 +12,11 @@ import { Button,
   Cell,
   CellGroup,
   Toast,
-  Loading } from 'vant'
+  Loading,
+  Tabbar,
+  TabbarItem
+} from 'vant'
+
 Vue.use(Button)
   .use(NavBar)
   .use(Field)
@@ -20,13 +24,20 @@ Vue.use(Button)
   .use(CellGroup)
   .use(Toast)
   .use(Loading)
-
+  .use(Tabbar)
+  .use(TabbarItem)
 for (let rule in rules) {
   extend(rule, {
     ...rules[rule],
     message: zhCN.messages[rule]
   })
 }
+extend('phone', {
+  validate (value) {
+    return /^1[3-9]\d{9}$/.test(value)
+  },
+  message: '手机号格式错误'
+})
 Vue.component('ValidationProvider', ValidationProvider)
 Vue.component('ValidationObserver', ValidationObserver)
 

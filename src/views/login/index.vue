@@ -3,7 +3,7 @@
     <van-nav-bar title="登录" />
     <van-cell-group>
         <ValidationObserver tag="form" ref="loginfrom">
-        <ValidationProvider tag="div" name="手机号" rules="required" v-slot="{errors}">
+        <ValidationProvider tag="div" name="手机号" rules="required|phone" v-slot="{errors}">
             <van-field
                 required
                 clearable
@@ -33,6 +33,7 @@
 
 <script>
 import { login } from '@/api/user'
+import { mapMutations } from 'vuex'
 export default {
   name: 'loginIndex',
   data () {
@@ -45,6 +46,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['setUser']),
     async onLogin () {
       try {
         const isValidate = await this.$refs.loginfrom.validate()
@@ -55,6 +57,7 @@ export default {
         let { data } = await login(this.user)
         console.log(data)
         this.$toast.success('登录成功')
+        this.setUser(data.data)
       } catch (err) {
         if (err.response && err.response.status === 400) {
           this.$toast.fail('登录失败，请重新登录')

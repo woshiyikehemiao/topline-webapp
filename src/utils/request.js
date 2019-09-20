@@ -1,5 +1,6 @@
 import axios from 'axios'
 import Bigint from 'json-bigint'
+import store from '@/store/index.js'
 const request = axios.create({
   baseURL: 'http://ttapi.research.itcast.cn'
 })
@@ -12,4 +13,14 @@ request.defaults.transformResponse = [function (data) {
     return data
   }
 }]
+request.interceptors.request.use(function (config) {
+  const { user } = store.state
+  if (user) {
+    config.headers.Authorization = `Bearer ${user.token}`
+  }
+  return config
+}, function (error) {
+  // do something with request error
+  return Promise.reject(error)
+})
 export default request
