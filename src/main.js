@@ -14,7 +14,9 @@ import { Button,
   Toast,
   Loading,
   Tabbar,
-  TabbarItem
+  TabbarItem,
+  Tab,
+  Tabs
 } from 'vant'
 
 Vue.use(Button)
@@ -26,6 +28,8 @@ Vue.use(Button)
   .use(Loading)
   .use(Tabbar)
   .use(TabbarItem)
+  .use(Tab)
+  .use(Tabs)
 for (let rule in rules) {
   extend(rule, {
     ...rules[rule],
