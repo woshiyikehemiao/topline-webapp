@@ -13,12 +13,23 @@
 </template>
 
 <script>
+import { getAllChannels } from '@/api/channel'
 export default {
   name: 'homeIndex',
   data () {
     return {
-      active: 0
+      active: 0,
+      channels: []
     }
+  },
+  methods: {
+    async loadAllChannels () {
+      const { data } = await getAllChannels()
+      this.channels = data.data.channls
+    }
+  },
+  created () {
+    this.loadAllChannels()
   }
 }
 </script>
