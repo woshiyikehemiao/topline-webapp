@@ -16,7 +16,8 @@ import { Button,
   Tabbar,
   TabbarItem,
   Tab,
-  Tabs
+  Tabs,
+  List
 } from 'vant'
 
 Vue.use(Button)
@@ -30,6 +31,7 @@ Vue.use(Button)
   .use(TabbarItem)
   .use(Tab)
   .use(Tabs)
+  .use(List)
 for (let rule in rules) {
   extend(rule, {
     ...rules[rule],
