@@ -6,6 +6,7 @@ import './styles/index.less'
 import { ValidationProvider, ValidationObserver, extend } from 'vee-validate'
 import zhCN from 'vee-validate/dist/locale/zh_CN'
 import * as rules from 'vee-validate/dist/rules'
+import { relativeTime } from './utils/date'
 import { Button,
   NavBar,
   Field,
@@ -17,7 +18,12 @@ import { Button,
   TabbarItem,
   Tab,
   Tabs,
-  List
+  List,
+  PullRefresh,
+  Grid,
+  GridItem,
+  Image,
+  Lazyload
 } from 'vant'
 
 Vue.use(Button)
@@ -32,6 +38,13 @@ Vue.use(Button)
   .use(Tab)
   .use(Tabs)
   .use(List)
+  .use(PullRefresh)
+  .use(Grid)
+  .use(GridItem)
+  .use(Image)
+  .use(Lazyload)
+
+Vue.filter('relativeTime', relativeTime)
 for (let rule in rules) {
   extend(rule, {
     ...rules[rule],
