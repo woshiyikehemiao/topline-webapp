@@ -23,7 +23,9 @@ import { Button,
   Grid,
   GridItem,
   Image,
-  Lazyload
+  Lazyload,
+  Popup,
+  Icon
 } from 'vant'
 
 Vue.use(Button)
@@ -43,6 +45,8 @@ Vue.use(Button)
   .use(GridItem)
   .use(Image)
   .use(Lazyload)
+  .use(Popup)
+  .use(Icon)
 
 Vue.filter('relativeTime', relativeTime)
 for (let rule in rules) {

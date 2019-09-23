@@ -4,6 +4,10 @@
     <van-nav-bar fixed title="首页" />
     <!-- 频道列表 -->
     <van-tabs v-model="active">
+      <!-- 面包按钮 -->
+      <div slot="nav-right" class="nav-button">
+        <van-icon name="wap-nav" size="24" @click="isChannelEditShow=true" />
+      </div>
       <van-tab :title="channel.name" v-for="channel in channels" :key="channel.id">
         <van-pull-refresh v-model="channel.isLoading" @refresh="onRefresh">
           <van-list
@@ -36,6 +40,31 @@
         </van-pull-refresh>
       </van-tab>
     </van-tabs>
+    <!-- 弹框设置 -->
+    <van-popup
+      v-model="isChannelEditShow"
+      position="bottom"
+      closeable
+      close-icon="close"
+      round
+      :style="{ height: '95%' }"
+    >
+      <!-- 我的频道 -->
+      <div class="mychannels">
+        <van-cell title="我的频道">
+          <van-button plain hairline type="info" round size="mini">编辑</van-button>
+        </van-cell>
+        <van-grid :gutter="10">
+          <van-grid-item v-for="value in 8" :key="value" text="文字" />
+        </van-grid>
+      </div>
+      <div class="mychannels">
+        <van-cell title="频道推荐"></van-cell>
+        <van-grid :gutter="10">
+          <van-grid-item v-for="value in 8" :key="value" text="文字" />
+        </van-grid>
+      </div>
+    </van-popup>
   </div>
 </template>
 
@@ -47,7 +76,8 @@ export default {
   data () {
     return {
       active: 0,
-      channels: []
+      channels: [],
+      isChannelEditShow: false
     }
   },
   computed: {
@@ -112,8 +142,23 @@ export default {
 
 <style lang="less" scoped>
 .home {
+  .van-popup {
+    .mychannels {
+      margin-top: 35px;
+    }
+  }
   .van-tabs {
-   /deep/ .van-tabs__content {
+    .nav-button {
+      position: sticky;
+      right: 0;
+      display: flex;
+      align-items: center;
+      background-color: #fff;
+      .van-icon {
+        opacity: 0.8;
+      }
+    }
+    /deep/ .van-tabs__content {
       margin-bottom: 50px;
       margin-top: 90px;
       .article-info {
@@ -125,13 +170,13 @@ export default {
         }
       }
     }
-     /deep/ .van-tabs__wrap{
-        position: fixed;
-        top: 46px;
-        left: 0;
-        right: 0;
-        z-index: 2;
-      }
+    /deep/ .van-tabs__wrap {
+      position: fixed;
+      top: 46px;
+      left: 0;
+      right: 0;
+      z-index: 2;
+    }
   }
 }
 </style>

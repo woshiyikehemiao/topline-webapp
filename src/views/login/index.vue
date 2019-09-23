@@ -56,8 +56,9 @@ export default {
         this.isLoading = true
         let { data } = await login(this.user)
         console.log(data)
-        this.$toast.success('登录成功')
+        // this.$toast.success('登录成功')
         this.setUser(data.data)
+        this.$router.push({ path: '/' })
       } catch (err) {
         if (err.response && err.response.status === 400) {
           this.$toast.fail('登录失败，请重新登录')
