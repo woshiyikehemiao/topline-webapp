@@ -55,7 +55,7 @@
           <van-button plain hairline type="info" round size="mini">编辑</van-button>
         </van-cell>
         <van-grid :gutter="10">
-          <van-grid-item v-for="value in 8" :key="value" text="文字" />
+          <van-grid-item v-for="channel in channels" :key="channel.id" :text="channel.name" />
         </van-grid>
       </div>
       <div class="mychannels">
@@ -69,8 +69,10 @@
 </template>
 
 <script>
-import { getAllChannels } from '@/api/channel'
+import { getUserOrDefaultChannels } from '@/api/channel'
 import { getArticles } from '@/api/article'
+import { mapState } from 'vuex'
+import { getStorage } from '@/utils/storage'
 export default {
   name: 'homeIndex',
   data () {
@@ -81,6 +83,7 @@ export default {
     }
   },
   computed: {
+    ...mapState(['user']),
     currentChannel () {
       // active 是当前标签的索引 可以用于获取动态的当前列表
       return this.channels[this.active]
@@ -110,7 +113,7 @@ export default {
       // 2、将获取到的文章列表添加到当前频道地articles属性中
       const { pre_timestamp: preTimestamp, results } = data.data
       currentChannel.articles.push(...results)
-      console.log(currentChannel.articles)
+      // console.log(currentChannel.articles)
       // 3、本次load数据加载完毕 将loading设置为false进行判断
       currentChannel.loading = false
       // 4、判断数据是否已经加载结束如果没有数据了 将finished设置为true
@@ -121,21 +124,31 @@ export default {
       }
     },
     // 获取频道列表
-    async loadAllChannels () {
-      const { data } = await getAllChannels()
-      data.data.channels.forEach(item => {
+    async loadUserOrDefaultChannels () {
+      let channels = []
+      if (this.user) {
+        const { data } = await getUserOrDefaultChannels()
+        channels = data.data.channels
+      } else {
+        if (getStorage('channels')) {
+          channels = getStorage('channels')
+        } else {
+          const { data } = await getUserOrDefaultChannels()
+          channels = data.data.channels
+        }
+      }
+      channels.forEach(item => {
         item.articles = []
         item.loading = false
         item.finished = false
         item.timestamp = null
         item.isLoading = false
       })
-      this.channels = data.data.channels
-      // console.log(this.channels)
+      this.channels = channels
     }
   },
   created () {
-    this.loadAllChannels()
+    this.loadUserOrDefaultChannels()
   }
 }
 </script>
