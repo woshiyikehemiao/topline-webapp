@@ -61,7 +61,7 @@
       <div class="mychannels">
         <van-cell title="频道推荐"></van-cell>
         <van-grid :gutter="10">
-          <van-grid-item v-for="value in 8" :key="value" text="文字" />
+          <van-grid-item v-for="channel in remainingChannels" :key="channel.id" :text="channel.name" />
         </van-grid>
       </div>
     </van-popup>
@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import { getUserOrDefaultChannels } from '@/api/channel'
+import { getUserOrDefaultChannels, getAllChannels } from '@/api/channel'
 import { getArticles } from '@/api/article'
 import { mapState } from 'vuex'
 import { getStorage } from '@/utils/storage'
@@ -79,7 +79,8 @@ export default {
     return {
       active: 0,
       channels: [],
-      isChannelEditShow: false
+      isChannelEditShow: false,
+      allChannels: []
     }
   },
   computed: {
@@ -87,6 +88,17 @@ export default {
     currentChannel () {
       // active 是当前标签的索引 可以用于获取动态的当前列表
       return this.channels[this.active]
+    },
+    // 获取剩余频道列表
+    remainingChannels () {
+      let channels = []
+      this.allChannels.forEach(channel => {
+        const index = this.channels.findIndex(item => item.id === channel.id)
+        if (index === -1) {
+          channels.push(channel)
+        }
+      })
+      return channels
     }
   },
   methods: {
@@ -145,10 +157,16 @@ export default {
         item.isLoading = false
       })
       this.channels = channels
+    },
+    // 获取全部列表
+    async loadAllChannels () {
+      const { data } = await getAllChannels()
+      this.allChannels = data.data.channels
     }
   },
   created () {
     this.loadUserOrDefaultChannels()
+    this.loadAllChannels()
   }
 }
 </script>
