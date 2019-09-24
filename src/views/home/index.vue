@@ -52,16 +52,19 @@
       <!-- 我的频道 -->
       <div class="mychannels">
         <van-cell title="我的频道">
-          <van-button plain hairline type="info" round size="mini">编辑</van-button>
+          <van-button plain hairline type="info" round size="mini" @click="isEdit=!isEdit">{{isEdit?'完成':'编辑'}}</van-button>
         </van-cell>
         <van-grid :gutter="10">
-          <van-grid-item v-for="channel in channels" :key="channel.id" :text="channel.name" />
+          <van-grid-item v-for="(channel,index) in channels" :key="channel.id" :text="channel.name" @click="onClickChannel(channel,index)">
+            <van-icon name="close" slot="icon" v-show="isEdit"/>
+          </van-grid-item>
         </van-grid>
       </div>
-      <div class="mychannels">
+      <div>
         <van-cell title="频道推荐"></van-cell>
         <van-grid :gutter="10">
-          <van-grid-item v-for="channel in remainingChannels" :key="channel.id" :text="channel.name" />
+          <van-grid-item v-for="channel in remainingChannels" :key="channel.id" :text="channel.name"
+          @click="onAddUserChannels(channel)" />
         </van-grid>
       </div>
     </van-popup>
@@ -69,10 +72,10 @@
 </template>
 
 <script>
-import { getUserOrDefaultChannels, getAllChannels } from '@/api/channel'
+import { getUserOrDefaultChannels, getAllChannels, onAddChannels } from '@/api/channel'
 import { getArticles } from '@/api/article'
 import { mapState } from 'vuex'
-import { getStorage } from '@/utils/storage'
+import { getStorage, setStorage } from '@/utils/storage'
 export default {
   name: 'homeIndex',
   data () {
@@ -80,7 +83,8 @@ export default {
       active: 0,
       channels: [],
       isChannelEditShow: false,
-      allChannels: []
+      allChannels: [],
+      isEdit: false
     }
   },
   computed: {
@@ -102,6 +106,41 @@ export default {
     }
   },
   methods: {
+    // 切换或者删除我的频道
+    onClickChannel (channel, index) {
+      if (this.isEdit) {
+        this.channels.splice(index, 1)
+        // 持久化
+        if (this.user) {
+          // 如果已登录
+        } else {
+          setStorage('channels', this.channels)
+        }
+      } else {
+        // 点击切换我的频道
+        this.isChannelEditShow = false
+        this.active = index
+      }
+    },
+    // 新增我的频道
+    async onAddUserChannels (channel) {
+      let channels = []
+      // 添加到我的频道
+      this.channels.push(channel)
+      // 如果已登录保存到后端
+      if (this.user) {
+        this.channels.slice(1).forEach((channel, index) => {
+          channels.push({
+            id: channel.id,
+            req: index + 2
+          })
+        })
+      } else {
+        // 如果没有登录保存到本地存储
+        setStorage('channels', this.channels)
+      }
+      await onAddChannels(channels)
+    },
     // 上拉刷新
     async onRefresh () {
       const currentChannel = this.currentChannel
@@ -176,6 +215,11 @@ export default {
   .van-popup {
     .mychannels {
       margin-top: 35px;
+      .van-icon{
+        position: absolute;
+        top: -3px;
+        right: -3px;
+      }
     }
   }
   .van-tabs {
