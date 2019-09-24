@@ -72,7 +72,10 @@
 </template>
 
 <script>
-import { getUserOrDefaultChannels, getAllChannels, onAddChannels } from '@/api/channel'
+import { getUserOrDefaultChannels,
+  getAllChannels,
+  onAddChannels,
+  deleteChannels } from '@/api/channel'
 import { getArticles } from '@/api/article'
 import { mapState } from 'vuex'
 import { getStorage, setStorage } from '@/utils/storage'
@@ -107,13 +110,15 @@ export default {
   },
   methods: {
     // 切换或者删除我的频道
-    onClickChannel (channel, index) {
+    async onClickChannel (channel, index) {
       if (this.isEdit) {
         this.channels.splice(index, 1)
         // 持久化
         if (this.user) {
           // 如果已登录
+          await deleteChannels(channel.id)
         } else {
+          // 如果没有登录
           setStorage('channels', this.channels)
         }
       } else {
@@ -135,11 +140,11 @@ export default {
             req: index + 2
           })
         })
+        await onAddChannels(channels)
       } else {
         // 如果没有登录保存到本地存储
         setStorage('channels', this.channels)
       }
-      await onAddChannels(channels)
     },
     // 上拉刷新
     async onRefresh () {
@@ -189,18 +194,35 @@ export default {
         }
       }
       channels.forEach(item => {
-        item.articles = []
-        item.loading = false
-        item.finished = false
-        item.timestamp = null
-        item.isLoading = false
+        // Object.assign(item, this.extendData)
+        let extendData = this.addExtendData()
+        Object.assign(item, extendData)
+        // item.articles = []
+        // item.loading = false
+        // item.finished = false
+        // item.timestamp = null
+        // item.isLoading = false
       })
       this.channels = channels
     },
     // 获取全部列表
     async loadAllChannels () {
       const { data } = await getAllChannels()
-      this.allChannels = data.data.channels
+      const channels = data.data.channels
+      channels.forEach(item => {
+        let extendData = this.addExtendData()
+        Object.assign(item, extendData)
+      })
+      this.allChannels = channels
+    },
+    addExtendData () {
+      return {
+        articles: [],
+        loading: false,
+        finished: false,
+        timestamp: null,
+        isLoading: false
+      }
     }
   },
   created () {
