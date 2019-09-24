@@ -19,7 +19,7 @@ export const getUserOrDefaultChannels = () => {
 // 增加频道（重置频道）
 export const onAddChannels = (channels) => {
   return request({
-    url: ' /app/v1_0/user/channels',
+    url: '/app/v1_0/user/channels',
     method: 'put',
     data: {
       channels

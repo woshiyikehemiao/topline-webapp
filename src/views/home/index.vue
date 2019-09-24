@@ -1,7 +1,9 @@
 <template>
   <div class="home">
     <!-- 导航栏 -->
-    <van-nav-bar fixed title="首页" />
+    <van-nav-bar fixed>
+      <van-button round type="info" slot="title" size="small" @click='$router.push({name:"search"})'>搜索</van-button>
+    </van-nav-bar>
     <!-- 频道列表 -->
     <van-tabs v-model="active">
       <!-- 面包按钮 -->
@@ -129,15 +131,15 @@ export default {
     },
     // 新增我的频道
     async onAddUserChannels (channel) {
-      let channels = []
       // 添加到我的频道
       this.channels.push(channel)
       // 如果已登录保存到后端
       if (this.user) {
+        let channels = []
         this.channels.slice(1).forEach((channel, index) => {
           channels.push({
             id: channel.id,
-            req: index + 2
+            seq: index + 2
           })
         })
         await onAddChannels(channels)
@@ -234,6 +236,9 @@ export default {
 
 <style lang="less" scoped>
 .home {
+  .van-button{
+    width: 100%;
+  }
   .van-popup {
     .mychannels {
       margin-top: 35px;
