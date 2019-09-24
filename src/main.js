@@ -25,7 +25,8 @@ import { Button,
   Image,
   Lazyload,
   Popup,
-  Icon
+  Icon,
+  Search
 } from 'vant'
 
 Vue.use(Button)
@@ -47,6 +48,7 @@ Vue.use(Button)
   .use(Lazyload)
   .use(Popup)
   .use(Icon)
+  .use(Search)
 
 Vue.filter('relativeTime', relativeTime)
 for (let rule in rules) {
